@@ -1,15 +1,11 @@
-setwd("CAD")
+setwd("CAD/dMarkovCAD/")
 source("lnviDM2.R")
 # source("return_path.R")
 # library("zoo")
 # yearOrRegion <- "G7"
-threestateCAD <- function(yearOrRegion){
-  
-  # dat <- read.csv(paste0("data/mds_",yearOrRegion,"-1950.csv"),sep=";")
-  # dat <- readxl::read_excel("data/cad_gdp_oecd.xlsx")
-  # dat <- as.data.frame(dat)
-  
-  dat <- get(load("CAD_quarterly_BOP.rda"))
+
+twostate <- function(dname){
+  dat <- get(load(paste0(dname,".rda")))
   dat <- dat/10e10
   
   lowerV <- c(-2,-2,.8,.8,0.001,-5,-5)
@@ -32,16 +28,16 @@ threestateCAD <- function(yearOrRegion){
   
   ress    <- lapply(1:ncol(dat), function(i) {cat(paste0(i,"\n")); tryCatch(constrOptim(inits, function(p) -lnviDM2(p,processdat(dat[,i])), NULL, ui = const_mat[,-8], const_mat[,8]),error=function(e) list(NA,NA))})
 
-  save(ress, file = paste0("CAD_quarterly_BOP_2state","_ress.rda"))
+  save(ress, file = paste0("output/",dname,"_2state_ress.rda"))
   
-  return(ress) 
+  estms <- sapply(ress,function(res) c(res$par,res$value,res$convergence))
+  colnames(estms) <- colnames(dat)
+  estms <- t(estms)
+  colnames(estms) <- c("d_1","d_2","d_3","P_11","P_22","P_33","P_12", "P_21", "P_31","sigma","mu_1","mu_2","mu_3","Neg_lklihood","Convergence")
+  write.csv(estms, paste0("output/",dname,"2_state_ress.csv"))
+  
 }
 
-estms <- sapply(ress,function(res) c(res$par,res$value,res$convergence))
-colnames(estms) <- colnames(dat)
-estms <- t(estms)
-colnames(estms) <- c("d_1","d_2","d_3","P_11","P_22","P_33","P_12", "P_21", "P_31","sigma","mu_1","mu_2","mu_3","Neg_lklihood","Convergence")
-write.csv(estms, "CAD_quarterly_BOP.csv")
 
 
 
