@@ -31,8 +31,8 @@ threestateCAD <- function(yearOrRegion){
   processdat <- function(ser){
     datrange <- range(which(!is.na(ser)))
     ser <- ser[datrange[1]:datrange[2]]
-    x   <- zoo(ser)
-    ser <- na.approx(x,1:length(ser))
+    # x   <- zoo(ser)
+    # ser <- na.approx(x,1:length(ser))
     ser
   }
   
@@ -41,9 +41,15 @@ threestateCAD <- function(yearOrRegion){
   # lnviD3(inits,processdat(dat[,1]))
   # constrOptim(inits, function(p) -lnviD3(p,processdat(dat[,1])/10e10), NULL, ui = const_mat[,-14], const_mat[,14])
   # lnvid <- function(b,w){ res <- tryCatch(lnviD3(b,w),error= function(e) list(NA,NA)); return(res) }
-  ress    <- lapply(1:ncol(dat), function(i) {cat(paste0(i,"\n")); constrOptim(inits, function(p) -lnviD3(p,processdat(dat[,i])), NULL, ui = const_mat[,-14], const_mat[,14])})
+  ress    <- lapply(1:ncol(dat), function(i) {cat(paste0(i,"\n")); tryCatch(constrOptim(inits, function(p) -lnviD3(p,processdat(dat[,i])), NULL, ui = const_mat[,-14], const_mat[,14]),error=function(e) list(NA,NA))})
+  # ress    <- lapply(1:ncol(dat), function(i) {cat(paste0(i,"\n")); constrOptim(inits, function(p) -lnviD3(p,processdat(dat[,i])), NULL, ui = const_mat[,-14], const_mat[,14])})
   save(ress, file = paste0(save_file,yearOrRegion,"_ress.rda"))
   
   return(ress) 
 }
 
+estms <- sapply(ress,function(res) c(res$par,res$value,res$convergence))
+colnames(estms) <- colnames(dat)
+estms <- t(estms)
+colnames(estms) <- c("d_1","d_2","d_3","P_11","P_22","P_33","P_12", "P_21", "P_31","sigma","mu_1","mu_2","mu_3","Neg_lklihood","Convergence")
+write.csv(estms, "CAD_quarterly_BOP.csv")
