@@ -1,5 +1,6 @@
-if(Sys.info()["sysname"]=="Linux"){setwd("~/Documents/CAD/")} else {setwd("~/CAD/")}
+if(Sys.info()["sysname"]=="Linux"){setwd("~/Documents/CAD/dMarkovCAD/")} else {setwd("~/CAD/dMarkovCAD/")}
 
+source("lnviDSM2.R")
 source("lnviDM2.R")
 source("lnviDS2.R")
 source("lnviD2.R")
@@ -14,9 +15,10 @@ dir.create("rejplots",showWarnings = F)
 dir.create("pairplots",showWarnings = F)
 
 # Estimating parameters for two state analysis
-twostateDMres <- twostate_DM("CAD_quarterly_BOP.rda")
-twostateDSres <- twostate_DS("CAD_quarterly_BOP.rda")
-twostateDres  <- twostate_D("CAD_quarterly_BOP.rda")
+twostateDSMres <- twostate_DSM("CAD_quarterly_BOP")
+twostateDMres  <- twostate_DM("CAD_quarterly_BOP")
+twostateDSres  <- twostate_DS("CAD_quarterly_BOP")
+twostateDres   <- twostate_D("CAD_quarterly_BOP")
 
 # Estimating parameters for three state analysis
 threestateress <- threestate("CAD_quarterly_BOP.rda")
