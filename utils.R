@@ -7,7 +7,9 @@ totable <- function(res){
 # Reshaping tables into similar forms
 correctRes <- function(res,type){
   # Reformats the table of estimates for it to be in "dH,dL,PHH,PLL, ..." order
-  if(type=="DM"){
+  if(type=="DSM"){
+    res[res[,1] > res[,2],] <- res[res[,1]>res[,2],c(2,1,4,3,6,5,8,7,9:ncol(res))]
+  } else if(type=="DM"){
     res[res[,1] > res[,2],] <- res[res[,1]>res[,2],c(2,1,4,3,5,7,6,8:ncol(res))]
   } else if(type=="DS"){
     res[res[,1]>res[,2],] <- res[res[,1]>res[,2],c(2,1,4,3,6,5,7:ncol(res))]
