@@ -5,14 +5,15 @@ totable <- function(res){
 }
 
 # Reshaping tables into similar forms
-correctRes <- function(res){
+correctRes <- function(res,type){
   # Reformats the table of estimates for it to be in "dH,dL,PHH,PLL, ..." order
-  if(ncol(res) == 7){
+  if(type=="DM"){
+    res[res[,1] > res[,2],] <- res[res[,1]>res[,2],c(2,1,4,3,5,7,6,8:ncol(res))]
+  } else if(type=="DS"){
+    res[res[,1]>res[,2],] <- res[res[,1]>res[,2],c(2,1,4,3,6,5,7:ncol(res))]
+  } else if(type=="D"){
     res[res[,1]>res[,2],] <- res[res[,1]>res[,2],c(2,1,4,3,5:ncol(res))]
-  } else {
-    res[res[,1]>res[,2],] <- res[res[,1]>res[,2],c(2,1,4,3,5,7,6,8)]}
-  
-  
+  } else {stop("Unknown Type")}
   return(res)
 }
 
