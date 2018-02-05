@@ -80,12 +80,21 @@ gen_pdat <- function(yearOrRegion){
   
 }
 
-report <- function(res){
+report <- function(res,type){
   # reports the statistics of the output table
+  cnames <- colnames(res)
+  
   ind        <- (res[,1] < res[,2]) & (res[,1]!=0 | res[,2]!=0)
-  if(ncol(res)==7) {res[ind,] <- res[ind, c(2,1,4,3,5,7,6)]} else {
-    res[ind,] <- res[ind, c(2,1,4,3,5,6)]
-  }
+  if(type=="DSM"){
+    res[ind,] <- res[ind,c(2,1,4,3,6,5,8,7,9:ncol(res))]
+  } else if(type=="DM"){
+    res[ind,] <- res[ind,c(2,1,4,3,5,7,6,8:ncol(res))]
+  } else if(type=="DS"){
+    res[ind,] <- res[ind,c(2,1,4,3,6,5,7:ncol(res))]
+  } else if(type=="D"){
+    res[ind,] <- res[ind,c(2,1,4,3,5:ncol(res))]
+  } else {stop("Unknown Type")}
+  
   
   nr         <- nrow(res)
   noChange   <- res[(res[,1]==0) | (res[,2]==0),]
@@ -104,8 +113,9 @@ report <- function(res){
   }))
   repp <- repp[c(1,2,3,5,4),]
   rownames(repp) <- c("C","D","C - C","C - D","D - D")
-  colnames(repp) <- c("Perc.","Avg. d_1","Avg. d_2","Avg. P_11","Avg. P_22", "Avg. Sigma", "Avg. mu_1", "Avg. mu_2")[1:(ncol(res)+1)]
+  colnames(repp) <- c("Perc.",cnames)[1:(ncol(res)+1)]
   repp <- round(repp,3)
+  repp <- repp[,1:(ncol(repp)-2)]
   return(repp)
 }
 

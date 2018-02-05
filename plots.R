@@ -1,18 +1,18 @@
-library("ggplot2","gridExtra")
-
+library("ggplot2")
+library("gridExtra")
 # Reading outputs
 ress_2stateDSM <- get(load(paste0("output/","CAD_quarterly_BOP_2stateDSM_ress.rda")))
 ress_2stateDM  <- get(load(paste0("output/","CAD_quarterly_BOP_2stateDM_ress.rda")))
 ress_2stateDS  <- get(load(paste0("output/","CAD_quarterly_BOP_2stateDS_ress.rda")))
 ress_2stateD   <- get(load(paste0("output/","CAD_quarterly_BOP_2stateD_ress.rda")))
-ress_3state    <- get(load(paste0("output/","CAD_quarterly_BOP_ress.rda")))
+# ress_3state    <- get(load(paste0("output/","CAD_quarterly_BOP_ress.rda")))
 
 # Converting to tables
 ress_2stateDSM <- totable(ress_2stateDSM)
-ress_2stateDM <- totable(ress_2stateDM)
-ress_2stateDS <- totable(ress_2stateDS)
-ress_2stateD  <- totable(ress_2stateD)
-ress_3state   <- totable(ress_3state)
+ress_2stateDM  <- totable(ress_2stateDM)
+ress_2stateDS  <- totable(ress_2stateDS)
+ress_2stateD   <- totable(ress_2stateD)
+# ress_3state   <- totable(ress_3state)
 
 # Reformating results
 ress_2stateDSM <- correctRes(ress_2stateDSM,"DSM")
@@ -51,14 +51,14 @@ dsDSM <- lapply(1:nrow(ress_2stateDSM), function(x) {matrix(ress_2stateDSM[x,1:2
 dsDM  <- lapply(1:nrow(ress_2stateDM),  function(x) {matrix(ress_2stateDM[x,1:2],1)  %*% dlvPath_DM(ress_2stateDM[x,1:7],processdat(dat[,x]))})
 dsDS  <- lapply(1:nrow(ress_2stateDS),  function(x) {matrix(ress_2stateDS[x,1:2],1)  %*% dlvPath_DS(ress_2stateDS[x,1:7],processdat(dat[,x]))})
 dsD   <- lapply(1:nrow(ress_2stateD),   function(x) {matrix(ress_2stateD[x,1:2],1)   %*% dlvPath_D(ress_2stateD[x,1:6],  processdat(dat[,x]))})
-ds3 <- lapply(1:nrow(ress_3state), function(x) {matrix(ress_3state[x,1:3],1,) %*% dlvPath_dm3(ress_3state[x,1:13],processdat(dat[,x]))})
+# ds3 <- lapply(1:nrow(ress_3state), function(x) {matrix(ress_3state[x,1:3],1,) %*% dlvPath_dm3(ress_3state[x,1:13],processdat(dat[,x]))})
 
 # Standardizing the length of ds
 dsDSM <- sapply(1:ncol(dat), function(i) deprocessds(dsDSM[[i]],dat[,i]))
 dsDM  <- sapply(1:ncol(dat), function(i) deprocessds(dsDM[[i]],dat[,i]))
 dsDS  <- sapply(1:ncol(dat), function(i) deprocessds(dsDS[[i]],dat[,i]))
 dsD   <- sapply(1:ncol(dat), function(i) deprocessds(dsD[[i]],dat[,i]))
-ds3   <- sapply(1:ncol(dat), function(i) deprocessds(ds3[[i]],dat[,i]))
+# ds3   <- sapply(1:ncol(dat), function(i) deprocessds(ds3[[i]],dat[,i]))
 
 
 tlabels <- unlist(lapply(1950:2018, function(y) paste0(y,c("Q1","Q2","Q3","Q4"))))
@@ -67,10 +67,10 @@ tlabels <- tlabels[1:nrow(dat)]
 # Code for plotting d estimations vs year of given pair for given dataset
 plot_specific2state <- function(serind){
   sername <- colnames(dat)[serind]
-  serDSM     <- dsDSM[,serind]; maintext1 <- paste0(sername, " Quarterly, CAD, (d,mu,sigma) switching")
-  serDM      <- dsDM[,serind];  maintext2 <- paste0(sername, " Quarterly, CAD, (d,mu) switching")
-  serDS      <- dsDS[,serind];  maintext3 <- paste0(sername, " Quarterly, CAD, (d,sigma) switching")
-  serD       <- dsD[,serind];   maintext4 <- paste0(sername, " Quarterly, CAD, d switching")
+  serDSM     <- dsDSM[,serind]; maintext1 <- paste0(sername, " Quarterly, CAD, (d,mu,sigma) r. s.")
+  serDM      <- dsDM[,serind];  maintext2 <- paste0(sername, " Quarterly, CAD, (d,mu) r. s.")
+  serDS      <- dsDS[,serind];  maintext3 <- paste0(sername, " Quarterly, CAD, (d,sigma) r. s.")
+  serD       <- dsD[,serind];   maintext4 <- paste0(sername, " Quarterly, CAD, (d) r. s.")
   
   temp    <- data.frame(Quarter=tlabels,d = serDSM)
   temp    <- temp[!is.na(temp$d),]
@@ -88,19 +88,19 @@ plot_specific2state <- function(serind){
   temp    <- temp[!is.na(temp$d),]
   p <- ggplot(temp, aes(x = Quarter, y = d,group=1))
   p <- p + geom_line() + scale_x_discrete("Quarter", breaks=temp$Quarter[seq(1,length(temp$Quarter),20)])
-  p2 <- p + ggtitle(maintext2) + ggtitle(maintext1) + themeopt
+  p2 <- p + ggtitle(maintext2) + themeopt
   
   temp    <- data.frame(Quarter=tlabels,d = serDS)
   temp    <- temp[!is.na(temp$d),]
   p <- ggplot(temp, aes(x = Quarter, y = d,group=1))
   p <- p + geom_line() + scale_x_discrete("Quarter", breaks=temp$Quarter[seq(1,length(temp$Quarter),20)])
-  p3 <- p + ggtitle(maintext3) + ggtitle(maintext1) + themeopt
+  p3 <- p + ggtitle(maintext3) + themeopt
   
   temp    <- data.frame(Quarter=tlabels,d = serD)
   temp    <- temp[!is.na(temp$d),]
   p <- ggplot(temp, aes(x = Quarter, y = d,group=1))
   p <- p + geom_line() + scale_x_discrete("Quarter", breaks=temp$Quarter[seq(1,length(temp$Quarter),20)])
-  p4 <- p + ggtitle(maintext4) + ggtitle(maintext1) + themeopt
+  p4 <- p + ggtitle(maintext4) + themeopt
     
   
   ggsave(paste0("pairplots/","CAD_Q","_",sername,"_twostate.jpg"),arrangeGrob(p1,p2,p3,p4))
