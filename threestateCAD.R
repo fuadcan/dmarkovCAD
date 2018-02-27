@@ -31,11 +31,11 @@ threestateCAD <- function(yearOrRegion){
   processdat <- function(ser){
     datrange <- range(which(!is.na(ser)))
     ser <- ser[datrange[1]:datrange[2]]
-    # x   <- zoo(ser)
-    # ser <- na.approx(x,1:length(ser))
+    if(any(is.na(ser))){
+      x   <- zoo(ser)
+      ser <- na.approx(x,1:length(ser))}
     ser
   }
-  
   
   
   # lnviD3(inits,processdat(dat[,1]))

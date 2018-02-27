@@ -16,6 +16,9 @@ twostate_D <- function(dname){
   processdat <- function(ser){
     datrange <- range(which(!is.na(ser)))
     ser <- ser[datrange[1]:datrange[2]]
+    if(any(is.na(ser))){
+      x   <- zoo(ser)
+      ser <- na.approx(x,1:length(ser))}
     ser
   }
   

@@ -4,11 +4,23 @@ source("lnviDSM2.R")
 source("lnviDM2.R")
 source("lnviDS2.R")
 source("lnviD2.R")
+source("twostate_DSM.R")
 source("twostate_DM.R")
 source("twostate_DS.R")
 source("twostate_D.R")
 source("dlvPath.R")
 source("utils.R")
+
+
+#### Cleansing of JSTdatasetR2.xlsx ####
+# jst <- readxl::read_excel("JSTdatasetR2.xlsx",2)
+# jst <- data.frame(jst); jst <- jst[,c(1,2,ncol(jst))]
+# jst <- reshape2::dcast(jst,year~country,value.var = "ca.gdp")
+# rownames(jst) <- jst[,1]; jst <- jst[,-1]
+# jst <- jst[,!(colnames(jst) %in% c("Netherlands","Norway","Belgium","France"))]
+## (Excluded due to gaps in series) ##
+# save(jst,file = "JSTdatasetR2.rda")
+########################################
 
 dir.create("output",showWarnings = F)
 dir.create("results",showWarnings = F)
@@ -21,8 +33,13 @@ twostateDMres  <- twostate_DM("CAD_quarterly_BOP")
 twostateDSres  <- twostate_DS("CAD_quarterly_BOP")
 twostateDres   <- twostate_D("CAD_quarterly_BOP")
 
+twostateDSMres <- twostate_DSM("JSTdatasetR2")
+twostateDMres  <- twostate_DM("JSTdatasetR2")
+twostateDSres  <- twostate_DS("JSTdatasetR2")
+twostateDres   <- twostate_D("JSTdatasetR2")
+
 # Estimating parameters for three state analysis
-threestateress <- threestate("CAD_quarterly_BOP.rda")
+# threestateress <- threestate("CAD_quarterly_BOP.rda")
 
 # Reading outputs
 ress_2stateDSM <- get(load(paste0("output/","CAD_quarterly_BOP_2stateDSM_ress.rda")))
@@ -84,12 +101,12 @@ rownames(parss_2stateD) <- colnames(dat)
 write.csv(parss_2stateD, "results/CAD_quarterly_BOP_2stateD_results.csv")
 rep_2stateD    <- report(parss_2stateD,"D")
 
-ischange  <- t(sapply(pathss_3state, function(p) {temp <- apply(p,1,sum) > 0; temp <- c(temp,T,T,temp,T,temp,T,T); return(temp)}))
-parss_3state  <- ress_3state * ischange
-colnames(parss_3state) <- c("d_1","d_2","d_3","P_11","P_22","P_33","P_12","P_21","P_31","sigma","mu_1","mu_2","mu_3","Neg_lklh","Opt. Converged")
-rownames(parss_3state) <- colnames(dat)
-write.csv(parss_3state, "results/CAD_quarterly_BOP_3state_results.csv")
-
+# ischange  <- t(sapply(pathss_3state, function(p) {temp <- apply(p,1,sum) > 0; temp <- c(temp,T,T,temp,T,temp,T,T); return(temp)}))
+# parss_3state  <- ress_3state * ischange
+# colnames(parss_3state) <- c("d_1","d_2","d_3","P_11","P_22","P_33","P_12","P_21","P_31","sigma","mu_1","mu_2","mu_3","Neg_lklh","Opt. Converged")
+# rownames(parss_3state) <- colnames(dat)
+# write.csv(parss_3state, "results/CAD_quarterly_BOP_3state_results.csv")
+# 
 # Postprocessing and binding reports
 
 rep_2stateDM <- cbind(rep_2stateDM[,1:6],rep(NaN,5),rep_2stateDM[,7:8])
@@ -104,5 +121,5 @@ colnames(rep_2state)[1:2] <- c("Model","Conv.")
 write.csv(rep_2state,"results/report_2state.csv")
 
 # Plotting all path graphs
-source("plots_d.R")
-source("plots_dm.R")
+source("plots.R")
+

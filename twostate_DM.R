@@ -12,10 +12,13 @@ twostate_DM <- function(dname){
   const_mat <- cbind(const_mat,c(lowerV,-upperV))
 
   inits  <- c(1.2,  1.7,  0.9,  0.9,  0.01, 0.1,0.1)
-
-    processdat <- function(ser){
+  
+  processdat <- function(ser){
     datrange <- range(which(!is.na(ser)))
     ser <- ser[datrange[1]:datrange[2]]
+    if(any(is.na(ser))){
+      x   <- zoo(ser)
+      ser <- na.approx(x,1:length(ser))}
     ser
   }
   

@@ -174,4 +174,4 @@ plot_specific3 <- function(serind){
   ggsave(paste0("pairplots/","CAD_Q","_",sername,"_threestate.jpg"),p)
 }
 
-lapply(1:74, plot_specific3)
+# lapply(1:74, plot_specific3)

@@ -20,25 +20,25 @@ correctRes <- function(res,type){
 }
 
 
-report <- function(res){
-  # reports the statistics of the output table
-  nr        <- nrow(res)
-  noChange  <- res[res[,1]==res[,2],]
-  noChangeS <- noChange[noChange[,1]<1,]
-  noChangeN <- noChange[noChange[,1]>=1,]
-  change    <- res[res[,1]!=res[,2],]
-  changeSS  <- change[change[,1] < 1 & change[,2] < 1,]
-  changeNN  <- change[change[,1] >= 1 & change[,2] >= 1,]
-  changeNS  <- change[(change[,1] >= 1 & change[,2] <= 1) | (change[,1] <= 1 & change[,2] >= 1),]
-  
-  repp <- t(sapply(list(noChangeS,noChangeN,changeSS,changeNN,changeNS), function(d)
-    c(nrow(d)/nr, apply(d[,c(1:4)],2,function(x) mean(x,na.rm=T)))))
-  repp <- repp[c(3,5,4),]
-  rownames(repp) <- c("C - C","C - D","D - D")
-  colnames(repp) <- c("Perc.","Avg. d_1","Avg. d_2","Avg. P_11","Avg. P_22", "Rej. ADF")
-  
-  return(repp)
-}
+# report <- function(res){
+#   # reports the statistics of the output table
+#   nr        <- nrow(res)
+#   noChange  <- res[res[,1]==res[,2],]
+#   noChangeS <- noChange[noChange[,1]<1,]
+#   noChangeN <- noChange[noChange[,1]>=1,]
+#   change    <- res[res[,1]!=res[,2],]
+#   changeSS  <- change[change[,1] < 1 & change[,2] < 1,]
+#   changeNN  <- change[change[,1] >= 1 & change[,2] >= 1,]
+#   changeNS  <- change[(change[,1] >= 1 & change[,2] <= 1) | (change[,1] <= 1 & change[,2] >= 1),]
+#   
+#   repp <- t(sapply(list(noChangeS,noChangeN,changeSS,changeNN,changeNS), function(d)
+#     c(nrow(d)/nr, apply(d[,c(1:4)],2,function(x) mean(x,na.rm=T)))))
+#   repp <- repp[c(3,5,4),]
+#   rownames(repp) <- c("C - C","C - D","D - D")
+#   colnames(repp) <- c("Perc.","Avg. d_1","Avg. d_2","Avg. P_11","Avg. P_22", "Rej. ADF")
+#   
+#   return(repp)
+# }
 
 gen_pdat <- function(yearOrRegion){
   data_file <- "data/"

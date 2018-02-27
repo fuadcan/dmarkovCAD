@@ -2,7 +2,7 @@ source("lnviDSM2.R")
 
 twostate_DSM <- function(dname){
   dat <- get(load(paste0(dname,".rda")))
-  dat <- dat/10e10
+  if(dname == "CAD_quarterly_BOP"){dat <- dat/10e10; cat("divided to 10e10\n")}
   
   lowerV <- c(-2,-2,.8,.8,0.001,0.001,-5,-5)
   upperV <- c(2,2,.999,.999,5,5,5,5)
@@ -16,6 +16,9 @@ twostate_DSM <- function(dname){
   processdat <- function(ser){
     datrange <- range(which(!is.na(ser)))
     ser <- ser[datrange[1]:datrange[2]]
+    if(any(is.na(ser))){
+    x   <- zoo(ser)
+    ser <- na.approx(x,1:length(ser))}
     ser
   }
   
